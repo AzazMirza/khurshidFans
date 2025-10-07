@@ -17,7 +17,7 @@ const timelineData: TimelineItem[] = [
     subtitle: "We’re committed to delivering cutting-edge cooling solutions...",
     role: "Company CEO",
     date: "March 15, 2024",
-    name: "Mr. Zeshan",
+    name: "Mr. Zeeshan",
     link: "",
   },
   {
@@ -25,7 +25,7 @@ const timelineData: TimelineItem[] = [
     subtitle: "Our customers are at the heart of everything we do...",
     role: "Company CEO",
     date: "January 28, 2024",
-    name: "Mr. Zeshan",
+    name: "Mr. Zeeshan",
     link: "",
   },
   {
@@ -33,7 +33,7 @@ const timelineData: TimelineItem[] = [
     subtitle: "Our customers are at the heart of everything we do...",
     role: "Company CEO",
     date: "July 10, 2024",
-    name: "Mr. Zeshan",
+    name: "Mr. Zeeshan",
     link: "",
   },
 ];
@@ -115,18 +115,20 @@ function Card({ title, subtitle, role, name, link }: TimelineItem) {
     >
       <h3 className="text-lg font-semibold text-white">{title}</h3>
       <p className="text-neutral-200">{subtitle}</p>
-      <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-neutral-200">
-        <span className="px-2 py-1 rounded-md bg-neutral-300 font-semibold text-black">
+      <div className="flex flex-wrap items-center gap-3 mt-2">
+        <span className="px-3 py-1.5 rounded-lg text-[var(--gold-btn-color)] font-medium  hover:text-[var(--gold-btn-hover)] transition-colors">
           {role}
         </span>
-        <span>{name}</span>
+        <span className="px-3 py-1.5    text-white ">
+          {name}
+        </span>
       </div>
       <Link
         href={link}
-        className="inline-flex items-center gap-1 text-sm text-[var(--gold-btn-color)] hover:underline mt-3"
+        className="inline-flex items-center gap-1 mt-4 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
       >
         Event details ↗
       </Link>
-    </div>
-  );
-}
+        </div>
+      );
+    }

@@ -58,7 +58,7 @@ export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => (
       <NavigationMenuContent>
         <div className="flex flex-col w-[140px]">
           <NavigationMenuLink asChild>
-            <Link className="border-b hover:bg-[var(--nav-color)] hover:text-white" href="#contact">
+            <Link className="border-b hover:bg-[var(--nav-color)] hover:text-white" href="/#contact">
               Contact Us
             </Link>
           </NavigationMenuLink>
