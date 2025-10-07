@@ -127,7 +127,7 @@ function Card({ title, subtitle, role, name, link }: TimelineItem) {
         href={link}
         className="inline-flex items-center gap-1 mt-4 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
       >
-        Event details ↗
+        Event details.. ↗
       </Link>
         </div>
       );
