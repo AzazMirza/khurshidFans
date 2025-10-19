@@ -45,9 +45,9 @@ const faq = [
 export default function FAQ() {
   return (
     // <BubbleBackground interactive>
-      <div id="faq" className="relative z-10 w-full  backdrop-blur-lg">
-        <div className="max-w-screen-xl mx-auto py-8 xs:py-16 px-6">
-          <h2 className="md:text-center text-3xl xs:text-3xl md:text-4xl !leading-[1.15] font-bold tracking-tighter text-black">
+      <div id="faq" className="relative z-10 w-full  backdrop-blur-lg ">
+        <div className="max-w-screen-xl mx-auto py-8 xs:py-16 text-center lg:text-left px-4 lg:px-28">
+          <h2 className="text-center text-2xl xs:text-3xl lg:text-4xl !leading-[1.15] font-bold tracking-tighter text-black">
             Frequently Asked Questions
           </h2>
           <p className="mt-3 text-center text-gray-800 text-xl">

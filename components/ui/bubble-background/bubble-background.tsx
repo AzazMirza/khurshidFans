@@ -1,12 +1,13 @@
 'use client';
 
 import * as React from 'react';
+
 import {
   motion,
   type SpringOptions,
   useMotionValue,
   useSpring,
-} from 'motion/react';
+} from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 

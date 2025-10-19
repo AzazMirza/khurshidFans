@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Banner() {
   return (
-    <div className="relative z-10 w-full {/*bg-[var(--nav-color)]/10*/}">
+    <div className="relative z-10 w-full px-4 lg:px-28">
       <div
         className="
           max-w-5xl mx-auto rounded-2xl bg-[var(--nav-color)]/80 
@@ -16,7 +16,7 @@ export default function Banner() {
         "
       >
         {/* Left Text */}
-        <div>
+        <div className="text-center lg:text-left">
           <h2 className="text-xl text-white font-bold">Cooling with Style</h2>
           <p className="text-white mt-1">
             Sleek design and powerful performance in every fan.

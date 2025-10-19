@@ -14,12 +14,12 @@ export default function CTABanner() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           whileHover={{ scale: 1.02 }}
-          className="relative w-full text-foreground max-w-screen-lg mx-auto rounded-2xl py-10 md:py-16 px-6 md:px-14 
+          className="relative w-full text-foreground max-w-screen-lg mx-auto rounded-2xl py-10 md:py-16 px-6 lg:px-14 
                      bg-[var(--nav-color)]/70 dark:bg-black/20 backdrop-blur-lg shadow-xl border border-white"
         >
           {/* Heading + Text */}
-          <div className="flex flex-col gap-3">
-            <h2 className="text-3xl xs:text-3xl text-white md:text-4xl font-bold">
+          <div className="flex flex-col gap-3 text-center lg:text-left">
+            <h2 className="text-2xl xs:text-3xl text-white lg:text-4xl font-bold">
               Ready to Elevate Your Experience?
             </h2>
             <p className="mt-3 text-white/90 text-xl">

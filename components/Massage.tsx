@@ -46,7 +46,7 @@ export default function Timeline() {
         <span className="px-3 py-1 text-lg rounded-full bg-white/40 border border-white/40 text-black">
           Speaking Journey
         </span>
-        <h2 className="text-4xl font-bold text-black mt-4">CEO’s Perspective</h2>
+        <h2 className="text-2xl lg:text-4xl font-bold text-black mt-4">CEO’s Perspective</h2>
         <p className="text-black/80 text-sm  mt-2 max-w-2xl mx-auto">
           "An overview of my recent talks and workshops, where I’ve shared our
           vision for the future and the steps we’re taking to lead with purpose."
@@ -56,7 +56,10 @@ export default function Timeline() {
       {/* Timeline */}
       <div className="relative">
         {/* Center line */}
-        <div className="absolute left-1/2 top-0 h-full w-[2px] bg-neutral-700 -translate-x-1/2"></div>
+        <div className="absolute left-1/2  top-0 h-full w-[2px] bg-neutral-700 -translate-x-1/2
+  
+        left-8
+        md:left-1/2 md:-translate-x-1/2"></div>
 
         <div className="flex flex-col gap-28">
           {timelineData.map((item, i) => {
@@ -76,12 +79,12 @@ export default function Timeline() {
                 </div>
 
                 {/* Marker */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-0 w-6 h-6 rounded-full bg-neutral-900 border-2 border-neutral-900"></div>
+                <div className="absolute left-1/2 -translate-x-1/2 top-0 w-5 h-5 rounded-full bg-neutral-900  border-neutral-900"></div>
 
                 {/* Card */}
                 <div
                   className={`w-1/2 ${
-                    isLeft ? "pr-8 flex justify-end" : "pl-8 flex justify-start"
+                    isLeft ? "pr-3 flex justify-end" : "pl-3 flex justify-start"
                   }`}
                 >
                   <Card {...item} />
