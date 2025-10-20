@@ -29,8 +29,8 @@ const timelineData: TimelineItem[] = [
     link: "",
   },
   {
-    title: "Building Trust, One Home at a Time",
-    subtitle: "Our customers are at the heart of everything we do...",
+    title: "Leading with Innovation",
+    subtitle: "Shaping the future with efficient, eco-friendly products...",
     role: "Company CEO",
     date: "July 10, 2024",
     name: "Mr. Zeeshan",
@@ -46,8 +46,10 @@ export default function Timeline() {
         <span className="px-3 py-1 text-lg rounded-full bg-white/40 border border-white/40 text-black">
           Speaking Journey
         </span>
-        <h2 className="text-2xl lg:text-4xl font-bold text-black mt-4">CEO’s Perspective</h2>
-        <p className="text-black/80 text-sm  mt-2 max-w-2xl mx-auto">
+        <h2 className="text-2xl lg:text-4xl font-bold text-black mt-4">
+          CEO’s Perspective
+        </h2>
+        <p className="text-black/80 text-sm mt-2 max-w-2xl mx-auto">
           "An overview of my recent talks and workshops, where I’ve shared our
           vision for the future and the steps we’re taking to lead with purpose."
         </p>
@@ -55,37 +57,55 @@ export default function Timeline() {
 
       {/* Timeline */}
       <div className="relative">
-        {/* Center line */}
-        <div className="absolute left-1/2  top-0 h-full w-[2px] bg-neutral-700 -translate-x-1/2
-  
-        left-8
-        md:left-1/2 md:-translate-x-1/2"></div>
+        {/* Line — left on mobile, center on desktop */}
+        <div className="absolute top-0 h-full w-[2px] bg-neutral-700 left-6 sm:left-1/2 sm:-translate-x-1/2"></div>
 
-        <div className="flex flex-col gap-28">
+        <div className="flex flex-col gap-24">
           {timelineData.map((item, i) => {
             const isLeft = i % 2 === 0;
             return (
               <div
                 key={i}
-                className={`relative flex w-full ${
-                  isLeft ? "justify-start" : "justify-end"
-                }`}
+                className={`
+                  relative flex w-full 
+                  ${isLeft ? "sm:justify-start" : "sm:justify-end"} 
+                  justify-end
+                `}
               >
-                {/* Date above marker */}
-                <div className="absolute left-1/2 -translate-x-1/2 -top-10">
+                {/* Date */}
+                <div
+                  className="
+                    absolute 
+                    left-2 sm:left-1/2 sm:-translate-x-1/2 
+                    -top-10
+                  "
+                >
                   <span className="px-3 py-1 text-xs font-medium text-black bg-white border border-neutral-300 rounded-full shadow-sm whitespace-nowrap">
                     {item.date}
                   </span>
                 </div>
 
                 {/* Marker */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-0 w-5 h-5 rounded-full bg-neutral-900  border-neutral-900"></div>
+                <div
+                  className="
+                    absolute 
+                    left-[18px] sm:left-1/2 sm:-translate-x-1/2 
+                    top-0 w-3.5 h-3.5 rounded-full bg-neutral-900
+                  "
+                ></div>
 
                 {/* Card */}
                 <div
-                  className={`w-1/2 ${
-                    isLeft ? "pr-3 flex justify-end" : "pl-3 flex justify-start"
-                  }`}
+                  className={`
+                    w-[90%] sm:w-1/2 
+                    pl-4 sm:pl-0 
+                    ${
+                      isLeft
+                        ? "sm:pr-2 sm:justify-end"
+                        : "sm:pl-2 sm:justify-start"
+                    } 
+                    flex justify-start
+                  `}
                 >
                   <Card {...item} />
                 </div>
@@ -95,10 +115,10 @@ export default function Timeline() {
         </div>
       </div>
 
-      {/* Button below timeline */}
+      {/* Button */}
       <div className="text-center mt-16">
         <Link
-          href="" 
+          href=""
           className="inline-block px-6 py-3 bg-[var(--gold-btn-color)] text-black font-semibold rounded-lg shadow-md hover:bg-[var(--gold-btn-hover)] transition"
         >
           View All Events
@@ -107,7 +127,6 @@ export default function Timeline() {
     </section>
   );
 }
-
 
 function Card({ title, subtitle, role, name, link }: TimelineItem) {
   return (
@@ -119,12 +138,10 @@ function Card({ title, subtitle, role, name, link }: TimelineItem) {
       <h3 className="text-lg font-semibold text-white">{title}</h3>
       <p className="text-neutral-200">{subtitle}</p>
       <div className="flex flex-wrap items-center gap-3 mt-2">
-        <span className="px-3 py-1.5 rounded-lg text-[var(--gold-btn-color)] font-medium  hover:text-[var(--gold-btn-hover)] transition-colors">
+        <span className="px-3 py-1.5 rounded-lg text-[var(--gold-btn-color)] font-medium hover:text-[var(--gold-btn-hover)] transition-colors">
           {role}
         </span>
-        <span className="px-3 py-1.5    text-white ">
-          {name}
-        </span>
+        <span className="px-3 py-1.5 text-white">{name}</span>
       </div>
       <Link
         href={link}
@@ -132,6 +149,6 @@ function Card({ title, subtitle, role, name, link }: TimelineItem) {
       >
         Event details ↗
       </Link>
-        </div>
-      );
-    }
+    </div>
+  );
+}

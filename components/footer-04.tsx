@@ -16,7 +16,7 @@ import Link from "next/link";
 const footerLinks = [
   { title: "Home", href: "" },
   { title: "Store", href: "" },
-  { title: "Export Queries", href: "" },
+  { title: "ExportQueries", href: "" },
   { title: "Careers", href: "" },
   { title: "Help", href: "" },
   { title: "Privacy", href: "" },
@@ -30,7 +30,7 @@ const Footer04Page = () => {
         <div className="max-w-(--breakpoint-xl) mx-auto">
           <div className="py-12 flex flex-col sm:flex-row items-start justify-between gap-x-8 gap-y-10 px-6 xl:px-0">
             <div>
-              <a href="/" className="mx-auto sm:mx-0">
+              <a href="/" className="mx-auto sm:mx-0 flex justify-center lg:justify-start">
                 <img
                   className="h-13 w-25"
                   src="images/khurshid fans logo.png"
@@ -38,18 +38,20 @@ const Footer04Page = () => {
                 />
               </a>
 
-              <ul className="mt-6 flex items-center gap-4 flex-wrap">
-                {footerLinks.map(({ title, href }) => (
-                  <li key={title}>
-                    <Link
-                      href={href}
-                      className="text-white hover:text-[var(--gold-btn-color)] active:text-[var(--gold-btn-color)] nav-links transition-colors"
-                    >
-                      {title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-9">
+                <ul className="flex items-center gap-5 flex-wrap justify-center lg:justify-start">
+                  {footerLinks.map(({ title, href }) => (
+                    <li key={title}>
+                      <Link
+                        href={href}
+                        className="text-white hover:text-[var(--gold-btn-color)] active:text-[var(--gold-btn-color)] nav-links transition-colors"
+                      >
+                        {title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <Maps />
             {/* <div className="max-w-xs w-full ">
@@ -62,7 +64,7 @@ const Footer04Page = () => {
           </div>
 
           <Separator />
-          <div className="py-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-x-2 gap-y-5 px-6 xl:px-0">
+          <div className="py-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-x-3 gap-y-5 px-6 xl:px-0">
             <span className="text-white">
               &copy; {new Date().getFullYear()}{" "}
               <Link href="/" target="_blank">
