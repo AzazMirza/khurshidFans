@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 
 const footerLinks = [
-  { title: "Home", href: "" },
+  { title: "Home", href: ""  },
   { title: "Store", href: "" },
   { title: "Export Queries", href: "" },
   { title: "Careers", href: "" },
