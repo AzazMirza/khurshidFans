@@ -43,7 +43,7 @@ const Hero05 = () => {
             </Button> */}
           </div>
         </div>
-        <img src="images/kingmodel.png" alt="" className="w-full aspect-video lg:aspect-auto lg:w-[1000px] lg:h-screen bg-[var(--nav-color)] rounded-xl lg:rounded-none" />
+        <img src="images/unicorn.png" alt="" className="w-full aspect-video lg:aspect-auto lg:w-[1000px] lg:h-screen bg-[var(--nav-color)] rounded-xl lg:rounded-none" />
       </div>
     </div>
   );
