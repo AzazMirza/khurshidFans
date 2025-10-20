@@ -62,12 +62,12 @@ const Hero05 = () => {
                     />
                   </div> */}
         </div>
-        <div className="w-full aspect-video lg:aspect-auto lg:w-[800px] lg:h-screen bg-[var(--nav-color)] rounded-xl lg:rounded-none">
+        <div className="w-full  aspect-video lg:aspect-auto lg:w-[800px] lg:h-screen bg-[var(--nav-color)] rounded-xl lg:rounded-none">
 
           <img 
-            src="images/kingmodel.png" 
+            src="images/unicorn.webp" 
             alt="king model image" 
-            className="w-full h-full object-cover rounded-xl lg:rounded-none"
+            className="w-full h-full object-contain rounded-xl lg:rounded-none"
           />
         </div>
       </div>

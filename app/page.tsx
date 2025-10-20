@@ -32,7 +32,7 @@ export default function HomePage() {
           <CTA />
         </div>
       </BubbleBackground>
-      <Maps />
+      {/* <Maps /> */}
       <Footer />
       <BackToTopButton />
     </div>

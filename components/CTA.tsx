@@ -29,10 +29,10 @@ export default function CTABanner() {
           </div>
 
           {/* Buttons */}
-          <div className="mt-10 flex flex-col sm:flex-row gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center">
             <Button
               size="lg"
-              className="bg-[var(--gold-btn-color)] text-black hover:bg-[var(--gold-btn-hover)] cursor-pointer"
+              className="bg-[var(--gold-btn-color)]   text-black hover:bg-[var(--gold-btn-hover)] cursor-pointer"
             >
               Shop Now <ArrowUpRight className="!h-5 !w-5" />
             </Button>
