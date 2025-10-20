@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Banner() {
   return (
-    <div className="relative z-10 w-full px-4 lg:px-28">
+    <div className="relative z-10 w-full px-4 lg:px-29">
       <div
         className="
           max-w-5xl mx-auto rounded-2xl bg-[var(--nav-color)]/80 
