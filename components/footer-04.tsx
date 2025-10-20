@@ -62,7 +62,7 @@ const Footer04Page = () => {
             <span className="text-white">
               &copy; {new Date().getFullYear()}{" "}
               <Link href="/" target="_blank">
-                Khurshid Fans
+                Khurshid Fans footer
               </Link>
               . All rights reserved.
             </span>
