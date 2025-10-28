@@ -13,10 +13,11 @@ model product {
   price       Int
   stock       Int
   category    String
-  sku         String 
   rating      Float?
+  description String?
+  sku         String
   image       String?
-  description String?  // ✅ must be here exactly
+  images      String[]
   createdAt   DateTime @default(now())
 }
 

@@ -42,18 +42,25 @@ export async function GET(req: Request, { params }: Params) {
     );
   }
 }
-
-// ✅ PUT — Update product (with optional new image upload)
 export async function PUT(req: Request, { params }: Params) {
   try {
     const { id } = params;
-
     const contentType = req.headers.get("content-type") || "";
 
     // 👉 Case 1: JSON update (no file)
     if (contentType.includes("application/json")) {
       const body = await req.json();
-      const { name, price, stock, category, sku, rating, description, image } = body;
+      const {
+        name,
+        price,
+        stock,
+        category,
+        sku,
+        rating,
+        description,
+        image,
+        images,
+      } = body;
 
       const updated = await prisma.product.update({
         where: { id: Number(id) },
@@ -66,6 +73,7 @@ export async function PUT(req: Request, { params }: Params) {
           rating: rating ? Number(rating) : undefined,
           description,
           image,
+          images: Array.isArray(images) ? images : undefined,
         },
       });
 
@@ -82,20 +90,34 @@ export async function PUT(req: Request, { params }: Params) {
       const sku = formData.get("sku")?.toString() || "";
       const rating = Number(formData.get("rating"));
       const description = formData.get("description")?.toString() || "";
-      const file = formData.get("image") as File | null;
 
-      let imagePath: string | undefined;
+      const file = formData.get("image") as File | null; 
+      const galleryFiles = formData.getAll("images") as File[]; 
 
+      const uploadDir = path.join(process.cwd(), "public/uploads");
+      await fs.mkdir(uploadDir, { recursive: true });
+
+      let mainImagePath: string | undefined;
+      const galleryPaths: string[] = [];
+
+      // Save main image if provided
       if (file) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const uploadDir = path.join(process.cwd(), "public/uploads");
-
-        await fs.mkdir(uploadDir, { recursive: true });
         const filePath = path.join(uploadDir, `${Date.now()}-${file.name}`);
         await fs.writeFile(filePath, buffer);
+        mainImagePath = `/uploads/${path.basename(filePath)}`;
+      }
 
-        imagePath = `/uploads/${path.basename(filePath)}`;
+      // Save gallery images if provided
+      if (galleryFiles.length > 0) {
+        for (const f of galleryFiles) {
+          const bytes = await f.arrayBuffer();
+          const buffer = Buffer.from(bytes);
+          const filePath = path.join(uploadDir, `${Date.now()}-${f.name}`);
+          await fs.writeFile(filePath, buffer);
+          galleryPaths.push(`/uploads/${path.basename(filePath)}`);
+        }
       }
 
       const updated = await prisma.product.update({
@@ -108,14 +130,15 @@ export async function PUT(req: Request, { params }: Params) {
           sku,
           rating: isNaN(rating) ? undefined : rating,
           description,
-          ...(imagePath ? { image: imagePath } : {}),
+          ...(mainImagePath ? { image: mainImagePath } : {}),
+          ...(galleryPaths.length > 0 ? { images: galleryPaths } : {}),
         },
       });
 
       return NextResponse.json(updated, { headers: corsHeaders });
     }
 
-    // 👉 Unsupported type
+    // Unsupported content type
     return NextResponse.json(
       { error: "Unsupported content type" },
       { status: 400, headers: corsHeaders }
@@ -135,21 +158,51 @@ export async function PUT(req: Request, { params }: Params) {
   }
 }
 
-// ✅ DELETE — Delete product
 export async function DELETE(req: Request, { params }: Params) {
   try {
     const { id } = params;
-    await prisma.product.delete({ where: { id: Number(id) } });
+
+    // Find product first (to delete its images later)
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!product) {
+      return NextResponse.json(
+        { error: "Product not found" },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    // Delete images from filesystem if they exist
+    const imagePaths = [
+      product.image,
+      ...(Array.isArray(product.images) ? product.images : []),
+    ].filter(Boolean) as string[];
+
+    for (const img of imagePaths) {
+      const filePath = path.join(process.cwd(), "public", img);
+      try {
+        await fs.unlink(filePath);
+      } catch {
+        // Ignore if file doesn't exist
+      }
+    }
+
+    // Delete product from database
+    await prisma.product.delete({
+      where: { id: Number(id) },
+    });
 
     return NextResponse.json(
-      { message: "Deleted successfully" },
+      { message: "Product deleted successfully" },
       { headers: corsHeaders }
     );
   } catch (error: any) {
     console.error("DELETE /api/products/[id] error:", error.message);
     return NextResponse.json(
       { error: "Failed to delete product" },
-      { status: 400, headers: corsHeaders }
+      { status: 500, headers: corsHeaders }
     );
   }
-}
+}  

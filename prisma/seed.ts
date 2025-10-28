@@ -12,7 +12,7 @@ async function main() {
         category: "Ceiling Fan",
         rating: 4.5,
         description: "A stylish and energy-efficient ceiling fan.",
-        image: "/uploads/ceiling-fan.jpg",
+        images: "/uploads/ceiling-fan.jpg",
         sku: "classic_ceiling_fan_1",
       },
       {
@@ -22,7 +22,7 @@ async function main() {
         category: "Pedestal Fan",
         rating: 4.2,
         description: "Powerful air delivery with sleek design.",
-        image: "/uploads/pedestal-fan.jpg",
+        images: "/uploads/pedestal-fan.jpg",
         sku: "modern_pedestal_fan_2",
       },
       {
