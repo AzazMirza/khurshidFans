@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
+import { Prisma } from "@prisma/client";
 import path from "path";
+import sharp from "sharp";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,25 +15,58 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-// ✅ GET — Fetch all or search products
+// ✅ GET — Fetch paginated or searched products
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
+
     const search = searchParams.get("search") || "";
+    const currentPage = parseInt(searchParams.get("page") || "1", 10);
+    const limit = 12; // 12 products per page
+    const skip = (currentPage - 1) * limit;
 
-    const products = await prisma.product.findMany({
-      where: search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { category: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : undefined,
-      orderBy: { id: "desc" },
-    });
+    // 👇 Use correct type name: `Prisma.productWhereInput`
+    const where: Prisma.productWhereInput | undefined = search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              category: {
+                contains: search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+          ],
+        }
+      : undefined;
 
-    return NextResponse.json(products, { headers: corsHeaders });
+    // ✅ Fetch products and total count in parallel
+    const [products, totalProds] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: { id: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(totalProds / limit);
+
+    return NextResponse.json(
+      {
+        products,
+        totalProds,
+        currentPage,
+        totalPages,
+      },
+      { headers: corsHeaders }
+    );
   } catch (error: any) {
     console.error("GET /api/products error:", error.message);
     return NextResponse.json(
@@ -49,7 +84,6 @@ export async function POST(req: Request) {
     let mainImagePath = "";
     let additionalImages: string[] = [];
 
-    // Use /public/uploads (accessible by browser)
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await fs.mkdir(uploadDir, { recursive: true });
 
@@ -63,15 +97,32 @@ export async function POST(req: Request) {
       rating = formData.get("rating") as string;
       description = formData.get("description") as string;
 
+      // Function to compress and convert image
+      const processImage = async (file: File, folder: string) => {
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        const fileSizeMB = buffer.byteLength / (1024 * 1024);
+        const fileNameWithoutExt = path.parse(file.name).name;
+        const timeStamp = Date.now();
+
+        const compressedFileName = `${fileNameWithoutExt}-${timeStamp}.webp`;
+        const outputPath = path.join(folder, compressedFileName);
+
+        // Compress & Convert to WebP
+        const optimizedBuffer = await sharp(buffer)
+          .resize({ width: 1200 })
+          .webp({ quality: fileSizeMB > 1 ? 75 : 85 })
+          .toBuffer();
+
+        await fs.writeFile(outputPath, optimizedBuffer);
+        return `/uploads/${compressedFileName}`;
+      };
+
       // Main image
       const mainFile = formData.get("image") as File | null;
       if (mainFile) {
-        const bytes = await mainFile.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const fileName = `${Date.now()}_${mainFile.name}`;
-        const filePath = path.join(uploadDir, fileName);
-        await fs.writeFile(filePath, buffer);
-        mainImagePath = `/uploads/${fileName}`;
+        mainImagePath = await processImage(mainFile, uploadDir);
       } else {
         mainImagePath = `/uploads/default.png`;
       }
@@ -80,18 +131,14 @@ export async function POST(req: Request) {
       const files = formData.getAll("images") as File[];
       if (files.length > 0) {
         for (const file of files) {
-          const bytes = await file.arrayBuffer();
-          const buffer = Buffer.from(bytes);
-          const fileName = `${Date.now()}_${file.name}`;
-          const filePath = path.join(uploadDir, fileName);
-          await fs.writeFile(filePath, buffer);
-          additionalImages.push(`/uploads/${fileName}`);
+          const imagePath = await processImage(file, uploadDir);
+          additionalImages.push(imagePath);
         }
       } else {
         additionalImages = ["/uploads/default.png"];
       }
     } else {
-      // JSON body
+      // 🔹 Handle JSON body (no file upload)
       const body = await req.json();
       ({
         name,
@@ -109,7 +156,7 @@ export async function POST(req: Request) {
         additionalImages = ["/uploads/default.png"];
     }
 
-    // Validation
+    // 🔹 Validation
     if (!name || !price || !stock || !category) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -117,14 +164,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save in DB
+    // 🔹 Save in database
     const product = await prisma.product.create({
       data: {
         name,
         price: Number(price),
         stock: Number(stock),
         category,
-        rating: rating ? Number(rating) : Math.floor(Math.random() * 3) + 3, 
+        rating: rating ? Number(rating) : Math.floor(Math.random() * 3) + 3,
         description: description || null,
         sku: "TEMP",
         image: mainImagePath,
@@ -132,7 +179,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // Generate SKU
+    // 🔹 Generate SKU after saving
     const formattedName = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "_")
@@ -156,4 +203,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

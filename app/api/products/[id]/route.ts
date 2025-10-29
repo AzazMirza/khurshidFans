@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { promises as fs } from "fs";
 import path from "path";
+import sharp from "sharp";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,10 +43,29 @@ export async function GET(req: Request, { params }: Params) {
     );
   }
 }
+
 export async function PUT(req: Request, { params }: Params) {
   try {
     const { id } = params;
     const contentType = req.headers.get("content-type") || "";
+
+    // ✅ Helper to compress + convert to WebP
+    const processImage = async (file: File, uploadDir: string) => {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const fileSizeMB = buffer.byteLength / (1024 * 1024);
+      const nameWithoutExt = path.parse(file.name).name;
+      const compressedFileName = `${nameWithoutExt}-${Date.now()}.webp`;
+      const outputPath = path.join(uploadDir, compressedFileName);
+
+      const optimizedBuffer = await sharp(buffer)
+        .resize({ width: 1200, withoutEnlargement: true })
+        .webp({ quality: fileSizeMB > 1 ? 75 : 85 })
+        .toBuffer();
+
+      await fs.writeFile(outputPath, optimizedBuffer);
+      return `/uploads/${compressedFileName}`;
+    };
 
     // 👉 Case 1: JSON update (no file)
     if (contentType.includes("application/json")) {
@@ -91,35 +111,60 @@ export async function PUT(req: Request, { params }: Params) {
       const rating = Number(formData.get("rating"));
       const description = formData.get("description")?.toString() || "";
 
-      const file = formData.get("image") as File | null; 
-      const galleryFiles = formData.getAll("images") as File[]; 
+      const file = formData.get("image") as File | null;
+      const galleryFiles = formData.getAll("images") as File[];
 
       const uploadDir = path.join(process.cwd(), "public/uploads");
       await fs.mkdir(uploadDir, { recursive: true });
 
+      // ✅ Fetch old product (to delete old images later)
+      const oldProduct = await prisma.product.findUnique({
+        where: { id: Number(id) },
+      });
+
       let mainImagePath: string | undefined;
       const galleryPaths: string[] = [];
 
-      // Save main image if provided
-      if (file) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const filePath = path.join(uploadDir, `${Date.now()}-${file.name}`);
-        await fs.writeFile(filePath, buffer);
-        mainImagePath = `/uploads/${path.basename(filePath)}`;
-      }
-
-      // Save gallery images if provided
-      if (galleryFiles.length > 0) {
-        for (const f of galleryFiles) {
-          const bytes = await f.arrayBuffer();
-          const buffer = Buffer.from(bytes);
-          const filePath = path.join(uploadDir, `${Date.now()}-${f.name}`);
-          await fs.writeFile(filePath, buffer);
-          galleryPaths.push(`/uploads/${path.basename(filePath)}`);
+      // ✅ Delete old main image if new one uploaded
+      if (file && oldProduct?.image) {
+        const oldImagePath = path.join(
+          process.cwd(),
+          "public",
+          oldProduct.image
+        );
+        try {
+          await fs.unlink(oldImagePath);
+        } catch {
+          // ignore if file doesn't exist
         }
       }
 
+      // ✅ Delete old gallery images if new ones uploaded
+      if (galleryFiles.length > 0 && Array.isArray(oldProduct?.images)) {
+        for (const oldImg of oldProduct.images) {
+          const oldPath = path.join(process.cwd(), "public", oldImg);
+          try {
+            await fs.unlink(oldPath);
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      // ✅ Compress main image if provided
+      if (file) {
+        mainImagePath = await processImage(file, uploadDir);
+      }
+
+      // ✅ Compress new gallery images if provided
+      if (galleryFiles.length > 0) {
+        for (const f of galleryFiles) {
+          const compressedPath = await processImage(f, uploadDir);
+          galleryPaths.push(compressedPath);
+        }
+      }
+
+      // ✅ Update product in DB
       const updated = await prisma.product.update({
         where: { id: Number(id) },
         data: {
@@ -205,4 +250,4 @@ export async function DELETE(req: Request, { params }: Params) {
       { status: 500, headers: corsHeaders }
     );
   }
-}  
+}
