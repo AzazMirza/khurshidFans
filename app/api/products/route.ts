@@ -22,11 +22,11 @@ export async function GET(req: Request) {
 
     const search = searchParams.get("search") || "";
     const currentPage = parseInt(searchParams.get("page") || "1", 10);
-    const limit = 12; // 12 products per page
+    const limit = 12; 
     const skip = (currentPage - 1) * limit;
 
     // 👇 Use correct type name: `Prisma.productWhereInput`
-    const where: Prisma.productWhereInput | undefined = search
+    const where: Prisma.ProductWhereInput | undefined = search
       ? {
           OR: [
             {
@@ -138,7 +138,6 @@ export async function POST(req: Request) {
         additionalImages = ["/uploads/default.png"];
       }
     } else {
-      // 🔹 Handle JSON body (no file upload)
       const body = await req.json();
       ({
         name,
@@ -156,7 +155,7 @@ export async function POST(req: Request) {
         additionalImages = ["/uploads/default.png"];
     }
 
-    // 🔹 Validation
+
     if (!name || !price || !stock || !category) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -164,7 +163,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🔹 Save in database
     const product = await prisma.product.create({
       data: {
         name,
