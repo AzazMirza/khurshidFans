@@ -68,7 +68,7 @@ export async function GET(req: Request) {
       { headers: corsHeaders }
     );
   } catch (error: any) {
-    console.error("GET /api/products error:", error.message);
+    console.error("GET /NEXT_PUBLIC_API/products error:", error.message);
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500, headers: corsHeaders }
@@ -194,7 +194,11 @@ export async function POST(req: Request) {
       headers: corsHeaders,
     });
   } catch (error: any) {
-    console.error("POST /api/products error:", error.message);
+    console.error(
+      "POST /NEXT_PUBLIC_API/products error:",
+      error.message,
+      error
+    );
     return NextResponse.json(
       { error: error.message || "Failed to create product" },
       { status: 500, headers: corsHeaders }

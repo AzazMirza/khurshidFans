@@ -1,0 +1,6 @@
+{
+  "prettier.bracketSameLine": true,
+  "prettier.experimentalTernaries": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.withNodeModules": false
+}

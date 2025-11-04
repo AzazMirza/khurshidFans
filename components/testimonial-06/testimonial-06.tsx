@@ -62,7 +62,7 @@ const testimonials = [
     company: "CodeCrafters",
     testimonial:
       "The best investment we've made! The support team is also super responsive and helpful. " +
-      "As a developer, I appreciate the well-documented API, the flexibility of integrations, and the robust security features.",
+      "As a developer, I appreciate the well-documented NEXT_PUBLIC_API, the flexibility of integrations, and the robust security features.",
     avatar: "https://randomuser.me/api/portraits/men/5.jpg",
   },
   {

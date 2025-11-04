@@ -62,7 +62,7 @@ const testimonials = [
     company: "CodeCrafters",
     testimonial:
       "The best investment we've made! The support team is also super responsive and helpful. " +
-      "As a developer, I appreciate the well-documented API, the flexibility of integrations, and the robust security features.",
+      "As a developer, I appreciate the well-documented NEXT_PUBLIC_API, the flexibility of integrations, and the robust security features.",
     avatar: "https://randomuser.me/api/portraits/men/5.jpg",
   },
   {
@@ -91,8 +91,8 @@ const Testimonial06 = () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
-  return ( 
-  // <BubbleBackground interactive>
+  return (
+    // <BubbleBackground interactive>
     <div className="relative z-10 {/*bg-[var(--nav-color)]/10*/} min-h-screen w-full flex justify-center items-center py-12 px-6">
       <div className="w-full">
         <h2 className="text-3xl xs:text-3xl md:text-4xl font-bold text-center tracking-[-0.03em]">
@@ -127,7 +127,6 @@ const Testimonial06 = () => {
         </div>
       </div>
     </div>
-
   );
 };
 const TestimonialCard = ({
@@ -136,7 +135,6 @@ const TestimonialCard = ({
   testimonial: (typeof testimonials)[number];
 }) => (
   <div className="mb-8 border bg-[var(--nav-color)]/40 rounded-xl py-8 px-6 sm:py-6 {/*shadow-[0_0_10px_rgba(223,211,0,0.5)]*/}">
-
     <div className="flex items-center justify-between gap-20">
       <div className="hidden lg:block relative shrink-0 aspect-3/4 max-w-[18rem] w-full bg-muted-foreground/20 rounded-xl">
         <div className="absolute top-1/4 right-0 translate-x-1/2 h-12 w-12 bg-primary rounded-full flex items-center justify-center">
@@ -186,7 +184,9 @@ const TestimonialCard = ({
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-lg font-semibold text-white">{testimonial.name}</p>
+            <p className="text-lg font-semibold text-white">
+              {testimonial.name}
+            </p>
             <p className="text-sm text-white">{testimonial.designation}</p>
           </div>
         </div>

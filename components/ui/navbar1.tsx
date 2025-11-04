@@ -109,7 +109,8 @@ const Navbar1 = ({
         },
         {
           title: "Status",
-          description: "Check the current status of our services and APIs",
+          description:
+            "Check the current status of our services and NEXT_PUBLIC_APIs",
           icon: <Trees className="size-5 shrink-0" />,
           url: "#",
         },
@@ -161,10 +162,10 @@ const Navbar1 = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button  asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm">
               <a href={auth.login.url}>{auth.login.title}</a>
             </Button>
-            <Button  asChild  size="sm" >
+            <Button asChild size="sm">
               <a href={auth.signup.url}>{auth.signup.title}</a>
             </Button>
           </div>

@@ -36,7 +36,7 @@ export async function GET(req: Request, { params }: Params) {
 
     return NextResponse.json(product, { headers: corsHeaders });
   } catch (error: any) {
-    console.error("GET /api/products/[id] error:", error.message);
+    console.error("GET /NEXT_PUBLIC_API/products/[id] error:", error.message);
     return NextResponse.json(
       { error: "Failed to fetch product" },
       { status: 500, headers: corsHeaders }
@@ -70,17 +70,8 @@ export async function PUT(req: Request, { params }: Params) {
     // 👉 Case 1: JSON update (no file)
     if (contentType.includes("application/json")) {
       const body = await req.json();
-      const {
-        name,
-        price,
-        stock,
-        category,
-        sku,
-        rating,
-        description,
-        image,
-        images,
-      } = body;
+      const { name, price, stock, category, sku, rating, description, image } =
+        body;
 
       const updated = await prisma.product.update({
         where: { id: Number(id) },
@@ -189,7 +180,7 @@ export async function PUT(req: Request, { params }: Params) {
       { status: 400, headers: corsHeaders }
     );
   } catch (error: any) {
-    console.error("PUT /api/products/[id] error:", error.message);
+    console.error("PUT /NEXT_PUBLIC_API/products/[id] error:", error.message);
     if (error.code === "P2025") {
       return NextResponse.json(
         { error: "Product not found" },
@@ -244,7 +235,10 @@ export async function DELETE(req: Request, { params }: Params) {
       { headers: corsHeaders }
     );
   } catch (error: any) {
-    console.error("DELETE /api/products/[id] error:", error.message);
+    console.error(
+      "DELETE /NEXT_PUBLIC_API/products/[id] error:",
+      error.message
+    );
     return NextResponse.json(
       { error: "Failed to delete product" },
       { status: 500, headers: corsHeaders }
