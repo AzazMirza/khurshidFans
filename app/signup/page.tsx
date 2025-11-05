@@ -17,28 +17,36 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-              identifier: z.string().refine((value) =>
-                                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 
-                                     /^\+?[1-9]\d{1,14}$/.test(value),
-                                    {
-                                      message: "Enter a valid email or phone number",
-                                    }),
+const formSchema = z
+  .object({
+    name: z.string(),
+    identifier: z
+      .string()
+      .refine(
+        (value) =>
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+          /^\+?[1-9]\d{1,14}$/.test(value),
+        {
+          message: "Enter a valid email or phone number",
+        }
+      ),
 
-              password: z.string().min(8, "Password must be at least 8 characters long")
-                                  .regex(/[a-zA-Z]/, "Password must include at least one letter.")
-                                  .regex(/[0-9]/, "Password must include at least one number."),
-              confirmpassword: z.string(),
-            })
-            .refine((data) => data.password === data.confirmpassword, {
-              message: "Passwords do not match",
-              path: ["confirmpassword"],
-            });
-
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/[a-zA-Z]/, "Password must include at least one letter.")
+      .regex(/[0-9]/, "Password must include at least one number."),
+    confirmpassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmpassword, {
+    message: "Passwords do not match",
+    path: ["confirmpassword"],
+  });
 
 const SignUp02Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
+      name: "",
       identifier: "",
       password: "",
       confirmpassword: "",
@@ -46,8 +54,26 @@ const SignUp02Page = () => {
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          identifier: data.identifier,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Signup failed");
+
+      alert("Signup successful!");
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   return (
@@ -62,7 +88,11 @@ const SignUp02Page = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-md flex flex-col items-center px-8 py-10 rounded-2xl shadow-lg backdrop-blur-lg bg-[var(--nav-color)]/20 border border-white/70">
-        <img src="/images/khurshid fans logo.png" alt="khurshid fans logo" className="h-12" />
+        <img
+          src="/images/khurshid fans logo.png"
+          alt="khurshid fans logo"
+          className="h-12"
+        />
         <p className="mt-4 text-xl font-semibold tracking-tight text-white">
           Sign up to Khurshid Fans
         </p>
@@ -84,28 +114,47 @@ const SignUp02Page = () => {
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <FormField
-                control={form.control}
-                name="identifier"
-                render={({ field }) => {
-                  const isPhone = /^\+?[0-9]*$/.test(field.value); 
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="string"
+                      placeholder="Enter your name"
+                      className="w-full bg-white/30 border border-white/40 text-white placeholder-white/70"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-300" />
+                </FormItem>
+              )}
+            />
 
-                  return (
-                    <FormItem>
-                      <FormLabel className="text-white">Email/Phone</FormLabel>
-                      <FormControl>
-                        <Input
-                          type={isPhone ? "tel" : "email"}
-                          inputMode={isPhone ? "tel" : "email"}
-                          placeholder="Enter your email or phone number"
-                          className="w-full bg-white/30 border border-white/40 text-white placeholder-white/70"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-300" />
-                    </FormItem>
-                  );
-                }}
-              />
+            <FormField
+              control={form.control}
+              name="identifier"
+              render={({ field }) => {
+                const isPhone = /^\+?[0-9]*$/.test(field.value);
+
+                return (
+                  <FormItem>
+                    <FormLabel className="text-white">Email/Phone</FormLabel>
+                    <FormControl>
+                      <Input
+                        type={isPhone ? "tel" : "email"}
+                        inputMode={isPhone ? "tel" : "email"}
+                        placeholder="Enter your email or phone number"
+                        className="w-full bg-white/30 border border-white/40 text-white placeholder-white/70"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-300" />
+                  </FormItem>
+                );
+              }}
+            />
 
             <FormField
               control={form.control}
@@ -148,7 +197,7 @@ const SignUp02Page = () => {
               type="submit"
               className="mt-4 w-full bg-[var(--gold-btn-color)] hover:bg-[var(--gold-btn-hover)] text-black cursor-pointer"
             >
-              Continue with Email
+              Continue
             </Button>
           </form>
         </Form>
@@ -156,7 +205,10 @@ const SignUp02Page = () => {
         <div className="mt-5 space-y-5">
           <p className="text-sm text-center text-white/80">
             Already have an account?
-            <Link href="/login" className="ml-1 underline text-white/80 hover:text-[var(--gold-btn-color)] focus:text-[var(--gold-btn-color)] active:text-[var(--gold-btn-color)]">
+            <Link
+              href="/login"
+              className="ml-1 underline text-white/80 hover:text-[var(--gold-btn-color)] focus:text-[var(--gold-btn-color)] active:text-[var(--gold-btn-color)]"
+            >
               Log in
             </Link>
           </p>

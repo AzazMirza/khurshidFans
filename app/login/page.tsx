@@ -22,7 +22,8 @@ const formSchema = z.object({
     .string()
     .refine(
       (value) =>
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || /^\+?[1-9]\d{1,14}$/.test(value),
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+        /^\+?[1-9]\d{1,14}$/.test(value),
       {
         message: "Enter a valid email or phone number",
       }
@@ -39,8 +40,27 @@ const Login02Page = () => {
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log("Login Data:", data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(result.error || "Login failed");
+        return;
+      }
+
+      // alert("Login successful!");
+      window.location.href = "dashboard";
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Something went wrong.");
+    }
   };
 
   return (
@@ -56,7 +76,11 @@ const Login02Page = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-md flex flex-col items-center px-8 py-10 rounded-2xl shadow-lg backdrop-blur-lg bg-[var(--nav-color)]/20 border border-white/70">
-        <img src="/images/khurshid fans logo.png" alt="khurshid fans logo" className="h-12" />
+        <img
+          src="/images/khurshid fans logo.png"
+          alt="khurshid fans logo"
+          className="h-12"
+        />
         <p className="mt-4 text-xl font-semibold tracking-tight text-white">
           Log in to Khurshid Fans
         </p>

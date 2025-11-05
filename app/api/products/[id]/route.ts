@@ -126,7 +126,6 @@ export async function PUT(req: Request, { params }: Params) {
         try {
           await fs.unlink(oldImagePath);
         } catch {
-          // ignore if file doesn't exist
         }
       }
 

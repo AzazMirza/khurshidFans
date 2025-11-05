@@ -12,10 +12,21 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-// ✅ GET → Fetch all orders (with user + products)
-export async function GET() {
+// ✅ GET → Fetch paginated orders
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const skip = (page - 1) * limit;
+
+    // 🧾 Fetch total count
+    const totalOrders = await prisma.order.count();
+
+    // 🧾 Fetch paginated orders
     const orders = await prisma.order.findMany({
+      skip,
+      take: limit,
       include: {
         user: {
           select: {
@@ -46,93 +57,25 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(orders, { headers: corsHeaders });
+    // 🧮 Pagination info
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return NextResponse.json(
+      {
+        data: orders,
+        meta: {
+          totalOrders,
+          totalPages,
+          currentPage: page,
+          limit,
+        },
+      },
+      { headers: corsHeaders }
+    );
   } catch (error: any) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch orders" },
-      { status: 500, headers: corsHeaders }
-    );
-  }
-}
-
-// ✅ POST → Create new order (and return full info)
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { userId, items } = body;
-
-    if (!userId || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json(
-        { error: "Invalid order data" },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // 🧮 Calculate total and prepare order items
-    let totalAmount = 0;
-    const orderItemsData = [];
-
-    for (const item of items) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.productId },
-      });
-
-      if (!product) throw new Error(`Product not found: ${item.productId}`);
-
-      totalAmount += product.price * item.quantity;
-
-      orderItemsData.push({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: product.price, // snapshot price
-      });
-    }
-
-    // 🧾 Create order
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        totalAmount,
-        orderItems: { create: orderItemsData },
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        orderItems: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                image: true,
-                category: true,
-                sku: true,
-                rating: true,
-                description: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(order, {
-      status: 201,
-      headers: corsHeaders,
-    });
-  } catch (error: any) {
-    console.error("Error creating order:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create order" },
       { status: 500, headers: corsHeaders }
     );
   }
